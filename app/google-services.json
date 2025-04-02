@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1097502564319",
+    "project_id": "smartpack-23894",
+    "storage_bucket": "smartpack-23894.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1097502564319:android:fa3b93ccaac56b09552e6a",
+        "android_client_info": {
+          "package_name": "com.example.smartpack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWr1Pb2LR5Pm-6oVhw2Kt-RKib9RiWNo0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
