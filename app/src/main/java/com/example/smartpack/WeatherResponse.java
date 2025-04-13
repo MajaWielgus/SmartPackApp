@@ -1,26 +1,28 @@
 package com.example.smartpack;
 
+import java.util.List;
+
 public class WeatherResponse {
     private Main main;
-    private Weather[] weather;
+    private List<Weather> weather;
 
     public Main getMain() {
         return main;
     }
 
-    public Weather[] getWeather() {
+    public List<Weather> getWeather() {
         return weather;
     }
 
-    public class Main {
-        private float temp;
+    public static class Main {
+        private double temp;
 
-        public float getTemp() {
+        public double getTemp() {
             return temp;
         }
     }
 
-    public class Weather {
+    public static class Weather {
         private String description;
 
         public String getDescription() {

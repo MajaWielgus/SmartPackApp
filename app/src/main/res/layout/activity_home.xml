@@ -1,44 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#BEE495B0"
     tools:context=".HomeActivity">
 
-    <!-- Pole na miejsce docelowe -->
+
     <EditText
-        android:id="@+id/editDestination"
+        android:id="@+id/editTextDestination"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Miejsce docelowe (np. Włochy)"
+        android:layout_marginTop="68dp"
+        android:backgroundTint="#F1A93E63"
+        android:hint="Wpisz miejsce docelowe"
         android:inputType="text"
-        app:layout_constraintStart_toStartOf="parent"
+        android:padding="16dp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintMargin="16dp"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Pole na liczbę dni -->
     <EditText
-        android:id="@+id/editDays"
+        android:id="@+id/editTextDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Liczba dni"
-        android:inputType="number"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="44dp"
+        android:backgroundTint="#F1A93E63"
+        android:hint="Wpisz datę"
+        android:inputType="date"
+        android:padding="16dp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editDestination"
-        app:layout_constraintMargin="16dp"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextDestination" />
 
-    <!-- Przycisk do zatwierdzenia -->
-    <Button
-        android:id="@+id/btnSubmit"
+    <EditText
+        android:id="@+id/editTextDays"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Pobierz prognozę pogody"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#F1A93E63"
+        android:hint="Wpisz liczbę dni"
+        android:inputType="number"
+        android:padding="16dp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editDays"
-        app:layout_constraintMargin="16dp"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextDate" />
+
+    <Button
+        android:id="@+id/btnGenerateList"
+        android:layout_width="155dp"
+        android:layout_height="74dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="116dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="#F5DC7FA0"
+        android:padding="16dp"
+        android:text="Generuj listę"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextDays" />
+
+    <TextView
+        android:id="@+id/txtPackingList"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="76dp"
+        android:layout_marginEnd="113dp"
+        android:background="#A0E495B0"
+        android:padding="16dp"
+        android:text="Twoja lista pakowania"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnGenerateList" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
