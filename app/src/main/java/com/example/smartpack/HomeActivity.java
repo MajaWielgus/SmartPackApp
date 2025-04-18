@@ -1,6 +1,8 @@
 package com.example.smartpack;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,10 +24,15 @@ import okhttp3.Response;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private EditText edtDestination;
-    private EditText edtDays;
-    private TextView txtPackingList;
-    private Button btnGenerateList;
+    private EditText edtDestination, edtDays;
+    private Button btnGenerate;
+    private TextView txtResult;
+
+    private final OkHttpClient client = new OkHttpClient();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
+    private final String API_KEY = BuildConfig.GEMINI_API_KEY;
+    private final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,80 +41,75 @@ public class HomeActivity extends AppCompatActivity {
 
         edtDestination = findViewById(R.id.editTextDestination);
         edtDays = findViewById(R.id.editTextDays);
-        txtPackingList = findViewById(R.id.txtPackingList);
-        btnGenerateList = findViewById(R.id.btnGenerateList);
+        btnGenerate = findViewById(R.id.btnGenerateList);
+        txtResult = findViewById(R.id.txtPackingList);
 
-        btnGenerateList.setOnClickListener(v -> {
+        btnGenerate.setOnClickListener(v -> {
             String destination = edtDestination.getText().toString().trim();
             String days = edtDays.getText().toString().trim();
 
-            if (!destination.isEmpty() && !days.isEmpty()) {
-                generatePackingList(destination, days);
-            } else {
-                Toast.makeText(HomeActivity.this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
+            if (destination.isEmpty() || days.isEmpty()) {
+                Toast.makeText(this, "Wypełnij wszystkie pola!", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            txtResult.setText("Generowanie listy...");
+
+            String userPrompt = "Lecę do " + destination + " na " + days + " dni. Co powinienem spakować?";
+            sendGeminiRequest(userPrompt);
         });
     }
 
-    public void generatePackingList(String destination, String days) {
-        String prompt = "I'm going to " + destination + " for " + days + " days. What should I pack?";
-
-        OkHttpClient client = new OkHttpClient();
-        String apiKey = "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" ; // <- Wklej swój prawdziwy klucz API
-        String url = "https://api.openai.com/v1/chat/completions";
+    private void sendGeminiRequest(String prompt) {
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
         try {
             JSONObject messageObj = new JSONObject();
-            messageObj.put("role", "user");
-            messageObj.put("content", prompt);
+            JSONArray partsArray = new JSONArray();
+            partsArray.put(new JSONObject().put("text", prompt));
+            JSONArray contentsArray = new JSONArray();
+            contentsArray.put(new JSONObject().put("parts", partsArray));
+            messageObj.put("contents", contentsArray);
 
-            JSONObject jsonBody = new JSONObject();
-            jsonBody.put("model", "gpt-3.5-turbo");
-            JSONArray messagesArray = new JSONArray();
-            messagesArray.put(messageObj);
-            jsonBody.put("messages", messagesArray);
-            jsonBody.put("max_tokens", 200);
+            RequestBody body = RequestBody.create(JSON, messageObj.toString());
 
             Request request = new Request.Builder()
-                    .url(url)
-                    .post(RequestBody.create(jsonBody.toString(), MediaType.parse("application/json")))
-                    .addHeader("Authorization", "Bearer " + apiKey)
+                    .url(API_URL)
+                    .post(body)
+                    .addHeader("Content-Type", "application/json")
                     .build();
 
-            client.newCall(request).enqueue(new okhttp3.Callback() {
-                @Override
-                public void onFailure(okhttp3.Call call, IOException e) {
-                    e.printStackTrace();
-                    runOnUiThread(() -> txtPackingList.setText("Error: " + e.getMessage()));
-                }
+            new Thread(() -> {
+                try (Response response = client.newCall(request).execute()) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String responseData = response.body().string();
 
-                @Override
-                public void onResponse(okhttp3.Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        String responseBody = response.body().string();
-                        try {
-                            JSONObject jsonObject = new JSONObject(responseBody);
-                            JSONArray choices = jsonObject.getJSONArray("choices");
-                            JSONObject message = choices.getJSONObject(0).getJSONObject("message");
-                            String reply = message.getString("content");
+                        JSONObject json = new JSONObject(responseData);
+                        String result = json.getJSONArray("candidates")
+                                .getJSONObject(0)
+                                .getJSONObject("content")
+                                .getJSONArray("parts")
+                                .getJSONObject(0)
+                                .getString("text");
 
-                            runOnUiThread(() -> txtPackingList.setText(reply.trim()));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            runOnUiThread(() -> txtPackingList.setText("Error parsing response"));
-                        }
+                        mainHandler.post(() -> txtResult.setText(result));
+
                     } else {
-                        String errorBody = response.body() != null ? response.body().string() : "null";
-                        Log.e("OpenAI", "Failed: " + response.code() + " - " + errorBody);
-                        runOnUiThread(() -> txtPackingList.setText("Request failed: " + response.code() + "\n" + errorBody));
-
+                        Log.e("Gemini", "Error: " + response.code());
+                        mainHandler.post(() -> txtResult.setText("Błąd: " + response.code()));
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mainHandler.post(() -> txtResult.setText("Błąd połączenia: " + e.getMessage()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mainHandler.post(() -> txtResult.setText("Błąd parsowania odpowiedzi."));
                 }
-            });
+            }).start();
 
         } catch (Exception e) {
             e.printStackTrace();
-            txtPackingList.setText("Exception: " + e.getMessage());
+            txtResult.setText("Błąd: " + e.getMessage());
         }
     }
 }

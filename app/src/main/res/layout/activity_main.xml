@@ -16,8 +16,9 @@
         android:background="#E9C0CD"
         android:backgroundTint="#E9C0CD"
         android:src="@android:drawable/ic_menu_compass"
-        tools:layout_editor_absoluteX="103dp"
-        tools:layout_editor_absoluteY="26dp" />
+        tools:layout_editor_absoluteX="91dp"
+        tools:layout_editor_absoluteY="25dp"
+        tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/edtEmail"

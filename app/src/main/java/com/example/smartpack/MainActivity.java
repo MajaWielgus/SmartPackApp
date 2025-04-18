@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     } else {
                         // Logowanie nieudane
-                        // Pokaż komunikat o błędzie
+                        // komunikat o błędzie
                         Toast.makeText(MainActivity.this, "Logowanie nieudane. Sprawdź dane logowania.", Toast.LENGTH_SHORT).show();
                     }
                 });

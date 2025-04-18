@@ -1,12 +1,25 @@
 plugins {
     id 'com.android.application'
-
     id 'com.google.gms.google-services'
 }
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(new FileInputStream(localPropertiesFile))
+}
+
+def GEMINI_API_KEY = localProperties.getProperty("GEMINI_API_KEY")
 
 android {
     namespace 'com.example.smartpack'
     compileSdk 35
+
+
+    buildFeatures {
+        buildConfig true
+    }
+
 
     defaultConfig {
         applicationId "com.example.smartpack"
@@ -16,7 +29,10 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "GEMINI_API_KEY", "\"${GEMINI_API_KEY}\""
+
     }
+
 
     buildTypes {
         release {
@@ -35,11 +51,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'//do wysylania zapytan http
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
 
 
 
